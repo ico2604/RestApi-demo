@@ -2,9 +2,10 @@ springdoc:
   swagger-ui:
     path: /
     groups-order: DESC
-    operationsSorter: method
+    operations-sorter: alpha #method
     disable-swagger-default-url: true
     display-request-duration: true
+    display-query-params-without-oauth2 : true
   api-docs:
     path: /api-docs
   show-actuator: true #엔드포인트
