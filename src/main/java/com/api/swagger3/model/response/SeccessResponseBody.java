@@ -1,7 +1,5 @@
 package com.api.swagger3.model.response;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
