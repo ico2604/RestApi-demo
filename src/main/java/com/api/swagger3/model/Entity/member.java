@@ -1,5 +1,7 @@
 package com.api.swagger3.model.Entity;
 
+import org.springframework.data.jpa.repository.Temporal;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -8,14 +10,14 @@ import jakarta.persistence.Id;
 import lombok.Data;
 @Data
 @Entity
-public class USER {
+public class member {
     @Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	@Column(name = "id")
-    private Long id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "memberKey")
+    private Long memberKey;
 
-	@Column(name = "userId")
-    private String userId;
+	@Column(name = "memberId")
+    private String memberId;
 
 	@Column(name = "name")
 	private String name;

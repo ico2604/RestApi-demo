@@ -25,7 +25,7 @@ import lombok.ToString;
 public class User {
     @Id
     @Schema(description = "회원코드")
-    private Long id;
+    private Long userKey;
 
     @Schema(description = "아이디")
     private String userId;
