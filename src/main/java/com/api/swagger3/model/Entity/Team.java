@@ -5,25 +5,17 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.Data;
 @Data
 @Entity
-public class Score {
+public class Team {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "scoreKey")
-    private Long scoreKey;
+	@Column(name = "teamKey")
+    private Long teamKey;
 
-	@Column(name = "score")
-	private int score;
-	
+	@Column(name = "teamName")
+	private String teamName;
+
 	@Column(name = "createDate")
 	private String createDate;
-
-	@ManyToOne @JoinColumn(name = "eduKey")
-	private Education education;
-
-	@ManyToOne @JoinColumn(name = "memberKey")
-	private Member member;
 }

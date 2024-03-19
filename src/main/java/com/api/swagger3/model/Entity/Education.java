@@ -10,20 +10,17 @@ import jakarta.persistence.ManyToOne;
 import lombok.Data;
 @Data
 @Entity
-public class Score {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "scoreKey")
-    private Long scoreKey;
+public class Education {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) 
+	@Column(name = "eduKey")
+    private Long eduKey;
 
-	@Column(name = "score")
-	private int score;
-	
+	@Column(name = "eduName")
+	private String eduName;
+
 	@Column(name = "createDate")
 	private String createDate;
 
-	@ManyToOne @JoinColumn(name = "eduKey")
-	private Education education;
-
-	@ManyToOne @JoinColumn(name = "memberKey")
-	private Member member;
+	@ManyToOne @JoinColumn(name = "scoreKey")
+	private Score score;
 }
