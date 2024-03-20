@@ -1,5 +1,9 @@
 package com.api.swagger3.model.Entity;
 
+import java.time.LocalDateTime;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,8 +22,10 @@ public class Score {
 	@Column(name = "score")
 	private int score;
 	
-	@Column(name = "createDate")
-	private String createDate;
+	@Column(name = "regDate")@DateTimeFormat(pattern = "yyyyMMdd")
+	private LocalDateTime regDate;
+	@Column(name = "modDate")@DateTimeFormat(pattern = "yyyyMMdd")
+	private LocalDateTime modDate;
 
 	@ManyToOne @JoinColumn(name = "eduKey")
 	private Education education;

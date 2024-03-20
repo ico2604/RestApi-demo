@@ -1,5 +1,7 @@
 package com.api.swagger3.model.Entity;
 
+import java.time.LocalDateTime;
+
 import org.springframework.format.annotation.DateTimeFormat;
 
 
@@ -13,9 +15,15 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 @Data
 @Entity
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Member {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "memberKey") @Schema(description = "회원코드")
@@ -43,21 +51,18 @@ public class Member {
 	@Column(name = "sex")@Schema(description = "성별", defaultValue = "1", allowableValues = {"1", "2"})
 	private String sex;
 
-	@DateTimeFormat(pattern = "yyyyMMdd")
 	@Column(name = "birthDate")@Schema(description = "생년월일", example = "yyyyMMdd", maxLength = 8)
 	private String birthDate;
 
 	@Column(name = "phoneNumber")@Schema(description = "전화번호", example = "01012345678")
 	private String phoneNumber;
 
+	@Column(name = "regDate")@DateTimeFormat(pattern = "yyyyMMdd")
+	private LocalDateTime regDate;
+
+	@Column(name = "modDate")@DateTimeFormat(pattern = "yyyyMMdd")
+	private LocalDateTime modDate;
+
 	@ManyToOne @JoinColumn(name = "teamKey")
 	private Team team;
-
-	private void setbirthDate(String birthDate){
-        this.birthDate = birthDate.replaceAll("\\-", "");
-    }
-
-    private void setPhoneNumber(String phoneNumber){
-        this.phoneNumber = phoneNumber.replaceAll("\\-", "");
-    }
 }

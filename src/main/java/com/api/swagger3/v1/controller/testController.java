@@ -2,6 +2,7 @@ package com.api.swagger3.v1.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.api.swagger3.dto.MemberDTO;
 import com.api.swagger3.model.Entity.Member;
 import com.api.swagger3.model.response.BadRequestResponseBody;
 import com.api.swagger3.model.response.ErrorResponseBody;
@@ -85,16 +86,24 @@ public class testController {
         ErrorResponseBody errorResponseBody;
         
         try{
-            Member m = memberService.loginMember(memberId, memberPw);//조회
+            MemberDTO m = memberService.loginMember(memberId, memberPw);//조회
             seccessResponseBody = new SeccessResponseBody();
             seccessResponseBody.setResultObject(m);//결과값
             resultBody = mapper.valueToTree(seccessResponseBody);
             return ResponseEntity.status(HttpStatus.OK).body(resultBody);
         }catch(Exception e){
-            log.error("getUser", e);
-            errorResponseBody = new ErrorResponseBody();
-            resultBody = mapper.valueToTree(errorResponseBody);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(resultBody);
+            log.error("controller", e.getMessage());
+            if(e.getMessage() == "SERVICE ERROR"){
+                errorResponseBody = new ErrorResponseBody();
+                resultBody = mapper.valueToTree(errorResponseBody);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(resultBody);
+            }else {
+                seccessResponseBody = new SeccessResponseBody();
+                seccessResponseBody.setServerMessage(e.getMessage());
+                resultBody = mapper.valueToTree(seccessResponseBody);
+                return ResponseEntity.status(HttpStatus.OK).body(resultBody);
+            }
+            
         }
         
     }
