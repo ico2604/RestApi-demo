@@ -2,6 +2,7 @@ package com.api.swagger3.model.Entity;
 
 import java.time.LocalDateTime;
 
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import jakarta.persistence.Column;
@@ -14,17 +15,15 @@ import jakarta.persistence.ManyToOne;
 import lombok.Data;
 @Data
 @Entity
-public class Score {
+public class Score extends BaseTimeEntity{
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "scoreKey")
     private Long scoreKey;
 
-	@Column(name = "score")
 	private int score;
 	
-	@Column(name = "regDate")@DateTimeFormat(pattern = "yyyyMMdd")
+	@CreatedDate
 	private LocalDateTime regDate;
-	@Column(name = "modDate")@DateTimeFormat(pattern = "yyyyMMdd")
+	
 	private LocalDateTime modDate;
 
 	@ManyToOne @JoinColumn(name = "eduKey")

@@ -52,15 +52,16 @@ public class testController {
         @ApiResponse(responseCode = "404", description = "존재하지 않는 리소스 접근", content = @Content(schema = @Schema(implementation = NotFoundResponseBody.class)))
     })
     @PostMapping(value = "/setUser")
-    public ResponseEntity<?> setUser(@Valid @RequestBody Member member) {
+    public ResponseEntity<?> setUser(@Valid @RequestBody MemberDTO memberDTO) {
         ObjectNode resultBody = null;
         ObjectMapper mapper = new ObjectMapper();
         SeccessResponseBody seccessResponseBody;
         ErrorResponseBody errorResponseBody;
 
         try{
+            memberService.setMember(memberDTO);
             seccessResponseBody = new SeccessResponseBody();
-            seccessResponseBody.setResultObject(member);
+            seccessResponseBody.setResultObject(memberDTO);
             resultBody = mapper.valueToTree(seccessResponseBody);
             return ResponseEntity.status(HttpStatus.OK).body(resultBody);
         }catch(Exception e){
