@@ -56,6 +56,10 @@ dependencies {
 
 	//mysql
 	runtimeOnly 'com.mysql:mysql-connector-j'
+
+	// https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.16.1'
+
 }
 
 //querydsl 추가 시작

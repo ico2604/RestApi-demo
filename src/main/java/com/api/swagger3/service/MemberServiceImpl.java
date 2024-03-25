@@ -69,11 +69,13 @@ public class MemberServiceImpl implements MemberService {
                 // 조인 문제로 인해 해결방법이 fetchJoin() 제거 하여 해결하였으나 N+1문제가 발생할수 있다고 한다.
                 .where(qMember.memberId.eq(id))
                 .fetchFirst();
+
+                return memberDTO;
         }catch(Exception e){
             log.error("loginMember", e);
             throw new Exception("SERVICE ERROR");
         }
-        return memberDTO;
+        
     }
 
     @Transactional
@@ -84,6 +86,7 @@ public class MemberServiceImpl implements MemberService {
             log.info("setMember start -------------------");
             log.info(m.toString());
             memberRepository.save(m);
+            log.info("setMember end -------------------");
         }catch(Exception e){
             log.error("setMember", e);
             throw new Exception("SERVICE ERROR");
