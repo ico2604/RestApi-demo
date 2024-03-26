@@ -1,4 +1,4 @@
-package com.api.swagger3.dto;
+package com.api.swagger3.model.dto;
 
 import java.time.LocalDateTime;
 

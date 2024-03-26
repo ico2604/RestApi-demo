@@ -6,12 +6,14 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.api.swagger3.dto.QTeamDTO;
-import com.api.swagger3.dto.TeamDTO;
 import com.api.swagger3.model.Entity.QMember;
 import com.api.swagger3.model.Entity.QTeam;
 import com.api.swagger3.model.Entity.Team;
+import com.api.swagger3.model.dto.QTeamSelectDTO;
+import com.api.swagger3.model.dto.TeamDTO;
+import com.api.swagger3.model.dto.TeamSelectDTO;
 import com.api.swagger3.repository.TeamRepository;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import jakarta.transaction.Transactional;
@@ -27,7 +29,9 @@ public class TeamServiceImpl implements TeamService {
 
     private final TeamRepository teamRepository;
 
-
+    private final QTeam qTeam = QTeam.team;
+    private final QMember qMember = QMember.member;
+    
     @Transactional
     @Override
     public void setTeam(TeamDTO teamDTO) throws Exception {
@@ -46,24 +50,22 @@ public class TeamServiceImpl implements TeamService {
 
     @Transactional
     @Override
-    public List<TeamDTO> getTeamList() throws Exception {
+    public List<TeamSelectDTO> getTeamList() throws Exception {
         try{
-            QTeam qTeam = QTeam.team;
-            //QMember qMember = QMember.member;
 
-            List<TeamDTO> teamList = jpaQueryFactory.select(
-                    new QTeamDTO(qTeam.teamKey, 
-                        qTeam.teamName,
-                        qTeam.members
-                    )
+            List<TeamSelectDTO> teamList = jpaQueryFactory
+                .select(
+                    new QTeamSelectDTO(qTeam.teamKey, qTeam.teamName, qMember.memberKey.count().as("memberCount"))
                 )
                 .from(qTeam)
-                //.leftJoin(qTeam.members, qMember)//.fetchJoin()
+                //.where(qMember.sex.eq("1"))
+                .groupBy(qTeam.teamKey)
+                .orderBy(qTeam.teamKey.desc())
+                .leftJoin(qMember).on(qTeam.teamKey.eq(qMember.team.teamKey)).fetchJoin()
                 .fetch();
-            for(TeamDTO dto : teamList){
-                log.info(dto+"");
+            for(TeamSelectDTO t : teamList){
+                System.out.println(t);
             }
-            
             return teamList;
         }catch(Exception e){
             log.error("getTeamList err", e);

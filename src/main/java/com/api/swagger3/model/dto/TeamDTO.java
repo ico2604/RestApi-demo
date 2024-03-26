@@ -1,4 +1,4 @@
-package com.api.swagger3.dto;
+package com.api.swagger3.model.dto;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-@Builder
+
 @NoArgsConstructor
 @Data
 public class TeamDTO {
@@ -21,15 +21,6 @@ public class TeamDTO {
     private Long teamKey;
     @Schema(description = "팀 이름")
     private String teamName;
-
-    private List<Member> members = new ArrayList<>(); 
- 
-    @QueryProjection
-    public TeamDTO(Long teamKey, String teamName, List<Member> members){
-        this.teamKey = teamKey;
-        this.teamName = teamName;
-        this.members = members;
-    }
 
     //dto로 받은 객체를 entity 화하여 저장하는 용도
     public Team toEntity(){

@@ -1,12 +1,21 @@
 package com.api.swagger3.service;
 
-import org.springframework.stereotype.Service;
+import java.util.List;
 
-import com.api.swagger3.dto.MemberDTO;
-import com.api.swagger3.dto.QMemberDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import com.api.swagger3.model.dto.QMemberDTO;
+import com.api.swagger3.model.request.MemberSerchCondition;
 import com.api.swagger3.model.Entity.Member;
 import com.api.swagger3.model.Entity.QMember;
+import com.api.swagger3.model.dto.MemberDTO;
 import com.api.swagger3.repository.MemberRepository;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import jakarta.transaction.Transactional;
@@ -21,6 +30,10 @@ public class MemberServiceImpl implements MemberService {
     private final JPAQueryFactory jpaQueryFactory;
 
     private final MemberRepository memberRepository;
+
+    private final QMember qMember = QMember.member;
+
+    private StringUtils utils;
 
     @Transactional
     @Override
@@ -51,7 +64,6 @@ public class MemberServiceImpl implements MemberService {
         
         MemberDTO memberDTO = null;
         try{
-            QMember qMember = QMember.member;
 
             memberDTO = jpaQueryFactory.select(
                 new QMemberDTO(
@@ -93,4 +105,47 @@ public class MemberServiceImpl implements MemberService {
         }
         
     }
+
+    @SuppressWarnings("static-access")
+    @Override
+    public Page<MemberDTO> setMembersPage(MemberSerchCondition condition, Pageable pageable) throws Exception {
+        List<MemberDTO> memberDTO = null;
+        try{
+            BooleanBuilder builder = new BooleanBuilder();
+            if (utils.hasText(condition.getName())) {
+                builder.and(qMember.name.eq(condition.getName()));
+            }
+
+            if(utils.hasText(condition.getSex())){
+                builder.and(qMember.sex.eq(condition.getSex()));
+            }
+
+            if(utils.hasText(condition.getType())) {
+                builder.and(qMember.type.goe(condition.getType()));
+            }
+
+            memberDTO = jpaQueryFactory.select(
+                new QMemberDTO(
+                    qMember.memberKey, 
+                    qMember.memberId, 
+                    qMember.name, 
+                    qMember.team.teamName
+                    )
+                )
+                .from(qMember)
+                .where(builder)
+                .orderBy(qMember.memberKey.desc())
+                .offset(pageable.getOffset())   // 페이지 번호
+                .limit(pageable.getPageSize())  // 페이지 사이즈
+                .fetch();
+
+            JPQLQuery<Long> count = jpaQueryFactory.select(qMember.count()).from(qMember).where(builder);
+
+            return PageableExecutionUtils.getPage(memberDTO, pageable, count::fetchCount);
+        }catch(Exception e){
+            log.error("loginMember", e);
+            throw new Exception("SERVICE ERROR");
+        }
+    }
+
 }

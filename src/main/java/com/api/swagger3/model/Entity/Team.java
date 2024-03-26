@@ -8,6 +8,7 @@ import org.springframework.data.annotation.CreatedDate;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -40,7 +41,4 @@ public class Team extends BaseTimeEntity{
 		CascadeType.DETACH: 부모 엔티티를 detach() 수행하면, 연관 엔티티도 detach()상태가 되어 변경 사항 반영 X
 		CascadeType.REFRESH: 상위 엔티티를 새로고침(Refresh)할 때, 연관된 엔티티도 모두 새로고침
 	 */
-	@OneToMany(mappedBy = "team", cascade = CascadeType.REMOVE)    
-	private List<Member> members = new ArrayList<>(); 
-
 }

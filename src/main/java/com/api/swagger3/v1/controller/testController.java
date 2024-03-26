@@ -2,9 +2,10 @@ package com.api.swagger3.v1.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.api.swagger3.dto.MemberDTO;
-import com.api.swagger3.dto.TeamDTO;
-import com.api.swagger3.model.Entity.Member;
+import com.api.swagger3.model.dto.MemberDTO;
+import com.api.swagger3.model.dto.TeamDTO;
+import com.api.swagger3.model.dto.TeamSelectDTO;
+import com.api.swagger3.model.request.MemberPageRequest;
 import com.api.swagger3.model.response.BadRequestResponseBody;
 import com.api.swagger3.model.response.ErrorResponseBody;
 import com.api.swagger3.model.response.NotFoundResponseBody;
@@ -28,6 +29,9 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -112,6 +116,36 @@ public class testController {
         }
     }
 
+    @Operation(summary = "회원 리스트(페이징)", description = "<b></b>.", responses = {
+        @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = SeccessResponseBody.class))),
+        @ApiResponse(responseCode = "500", description = "조회 오류 발생", content = @Content(schema = @Schema(implementation = ErrorResponseBody.class))),
+        @ApiResponse(responseCode = "400", description = "서버 오류 발생", content = @Content(schema = @Schema(implementation = BadRequestResponseBody.class))),
+        @ApiResponse(responseCode = "404", description = "존재하지 않는 리소스 접근", content = @Content(schema = @Schema(implementation = NotFoundResponseBody.class)))
+    })
+    @PostMapping(value = "/getMembersPage")
+    public ResponseEntity<?> getMembersPage(@RequestBody MemberPageRequest request) {
+        ObjectNode resultBody = null;
+        ObjectMapper mapper = new ObjectMapper();
+        SeccessResponseBody seccessResponseBody;
+        ErrorResponseBody errorResponseBody;
+
+        try{
+            Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), 
+                                            request.getDirection(), request.getSortField());
+
+            Page<MemberDTO> result = memberService.setMembersPage(request.getCondition(), pageable);
+            seccessResponseBody = new SeccessResponseBody();
+            seccessResponseBody.setResultObject(result);
+            resultBody = mapper.valueToTree(seccessResponseBody);
+            return ResponseEntity.status(HttpStatus.OK).body(resultBody);
+        }catch(Exception e){
+            log.error("회원 리스트(페이징)", e);
+            errorResponseBody = new ErrorResponseBody();
+            resultBody = mapper.valueToTree(errorResponseBody);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(resultBody);
+        } 
+    }
+
     @Operation(summary = "팀 등록", description = "<b>팀</b>을 등록하는<br>API입니다.", responses = {
         @ApiResponse(responseCode = "200", description = "팀 등록 성공", content = @Content(schema = @Schema(implementation = SeccessResponseBody.class))),
         @ApiResponse(responseCode = "500", description = "팀 등록 오류 발생", content = @Content(schema = @Schema(implementation = ErrorResponseBody.class))),
@@ -139,7 +173,7 @@ public class testController {
         } 
     }
 
-    @Operation(summary = "팀 리스트", description = "<b>팀 리스트 조회 및 하위 회원 리스트</b>.", responses = {
+    @Operation(summary = "팀 리스트", description = "<b>팀 리스트 조회 및 하위 회원 카운트</b>.", responses = {
         @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = SeccessResponseBody.class))),
         @ApiResponse(responseCode = "500", description = "조회 오류 발생", content = @Content(schema = @Schema(implementation = ErrorResponseBody.class))),
         @ApiResponse(responseCode = "400", description = "서버 오류 발생", content = @Content(schema = @Schema(implementation = BadRequestResponseBody.class))),
@@ -153,7 +187,7 @@ public class testController {
         ErrorResponseBody errorResponseBody;
 
         try{
-            List<TeamDTO> teamList = teamService.getTeamList();
+            List<TeamSelectDTO> teamList = teamService.getTeamList();
             seccessResponseBody = new SeccessResponseBody();
             seccessResponseBody.setResultObject(teamList);
             resultBody = mapper.valueToTree(seccessResponseBody);
