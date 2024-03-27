@@ -20,9 +20,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class MemberDTO {
-    @Schema(description = "회원코드")
-    private Long memberKey;
+public class MemberSaveDTO {
 
     @Schema(description = "아이디")
     private String memberId;
@@ -50,39 +48,13 @@ public class MemberDTO {
     @Schema(description = "전화번호", example = "01012345678")
     private String phoneNumber;
 
-    @DateTimeFormat(pattern = "yyyyMMdd")
-    private LocalDateTime regDate;
-
-    @DateTimeFormat(pattern = "yyyyMMdd")
-    private LocalDateTime modDate;
-
     @Schema(description = "팀 코드")
     private Long teamKey;
 
-    @Schema(description = "팀 이름")
-    private String teamName;
-
-    private Team team;
-
-    @QueryProjection
-    public MemberDTO(Long memberKey, String memberId, String name, String type, String email,
-    String sex, String birthDate, String phoneNumber, Long teamKey, String teamName){
-        this.memberKey = memberKey;
-        this.memberId = memberId;
-        this.name = name;
-        this.type = type;
-        this.email = email;
-        this.sex = sex;
-        this.birthDate = birthDate;
-        this.phoneNumber = phoneNumber;
-        this.teamKey = teamKey;
-        this.teamName = teamName;
-    }
     //dto로 받은 객체를 entity 화하여 저장하는 용도
     public Member toEntity(){
         LocalDateTime now = LocalDateTime.now();
-        return Member.builder()
-            .memberKey(memberKey)
+        Member member = Member.builder()
             .memberId(memberId)
             .memberPw(memberPw)
             .name(name)
@@ -91,8 +63,14 @@ public class MemberDTO {
             .sex(sex)
             .birthDate(birthDate)
             .phoneNumber(phoneNumber)
-            .team(team)
             .modDate(now)
             .build();
+        
+        if(teamKey != null) {
+            member.setTeam(Team.builder().teamKey(teamKey).build());
+        }
+        
+        return member;
+        
     }
 }

@@ -48,7 +48,9 @@ public class Member extends BaseTimeEntity{
 
 	private LocalDateTime modDate;
 
-	//EAGER(즉시로딩), LAZY(지연로딩)으로 즉시로딩은 조회시 자동으로 조인 칼럼과 조인을 하며, 지연로딩은 자동으로 조인시키지 않는다. 
+	//EAGER(즉시로딩), LAZY(지연로딩)으로 
+	//즉시로딩은 조회시 자동으로 조인 칼럼과 조인을 하며, 지연로딩은 자동으로 조인시키지 않는다. 
+	//하지만 DTO @QueryProjection으로 SELECT받을때 조인 변수의 칼럼을 SELECT에 추가하면 자동 조인 한다.
 	@ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "teamKey")
 	private Team team;
 }

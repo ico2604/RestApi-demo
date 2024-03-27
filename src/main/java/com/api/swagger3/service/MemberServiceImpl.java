@@ -13,6 +13,7 @@ import com.api.swagger3.model.request.MemberSerchCondition;
 import com.api.swagger3.model.Entity.Member;
 import com.api.swagger3.model.Entity.QMember;
 import com.api.swagger3.model.dto.MemberDTO;
+import com.api.swagger3.model.dto.MemberSaveDTO;
 import com.api.swagger3.repository.MemberRepository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.JPQLQuery;
@@ -70,15 +71,16 @@ public class MemberServiceImpl implements MemberService {
                     qMember.memberKey, 
                     qMember.memberId, 
                     qMember.name, 
+                    qMember.type,
+                    qMember.email,
+                    qMember.sex,
+                    qMember.birthDate,
+                    qMember.phoneNumber,
+                    qMember.team.teamKey,
                     qMember.team.teamName
                     )
                 )
                 .from(qMember)
-                //.innerJoin(qMember.team, qTeam)
-                //.fetchJoin()  
-                // 2024-03-20 
-                // error log : Query specified join fetching, but the owner of the fetched association was not present in the select list [SqmSingularJoin(com.api.swagger3.model.Entity.Member(member1).team(team) : team)]
-                // 조인 문제로 인해 해결방법이 fetchJoin() 제거 하여 해결하였으나 N+1문제가 발생할수 있다고 한다.
                 .where(qMember.memberId.eq(id))
                 .fetchFirst();
 
@@ -92,9 +94,9 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public void setMember(MemberDTO memberDTO) throws Exception {
+    public void setMember(MemberSaveDTO memberSaveDTO) throws Exception {
         try{
-            Member m = memberDTO.toEntity();
+            Member m = memberSaveDTO.toEntity();
             log.info("setMember start -------------------");
             log.info(m.toString());
             memberRepository.save(m);
@@ -129,6 +131,12 @@ public class MemberServiceImpl implements MemberService {
                     qMember.memberKey, 
                     qMember.memberId, 
                     qMember.name, 
+                    qMember.type,
+                    qMember.email,
+                    qMember.sex,
+                    qMember.birthDate,
+                    qMember.phoneNumber,
+                    qMember.team.teamKey,
                     qMember.team.teamName
                     )
                 )

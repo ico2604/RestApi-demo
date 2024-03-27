@@ -8,4 +8,5 @@ import com.api.swagger3.model.dto.TeamSelectDTO;
 public interface TeamService {
     public void setTeam(TeamDTO teamDTO) throws Exception;
     public List<TeamSelectDTO> getTeamList() throws Exception;
+    public void updateTeam(TeamDTO teamDTO) throws Exception;
 } 

@@ -1,5 +1,6 @@
 package com.api.swagger3.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,7 +53,6 @@ public class TeamServiceImpl implements TeamService {
     @Override
     public List<TeamSelectDTO> getTeamList() throws Exception {
         try{
-
             List<TeamSelectDTO> teamList = jpaQueryFactory
                 .select(
                     new QTeamSelectDTO(qTeam.teamKey, qTeam.teamName, qMember.memberKey.count().as("memberCount"))
@@ -69,6 +69,21 @@ public class TeamServiceImpl implements TeamService {
             return teamList;
         }catch(Exception e){
             log.error("getTeamList err", e);
+            throw new Exception("SERVICE ERROR");
+        }
+        
+    }
+
+    @Override
+    public void updateTeam(TeamDTO teamDTO) throws Exception {
+        try{
+            Team team = teamRepository.findById(teamDTO.getTeamKey()).orElseThrow(() -> new IllegalAccessException("team not found"));
+
+            //Dirty Checking
+            team.setTeamName(teamDTO.getTeamName());
+            team.setModDate(LocalDateTime.now());
+        }catch(Exception e){
+            log.error("updateTeam err", e);
             throw new Exception("SERVICE ERROR");
         }
         
