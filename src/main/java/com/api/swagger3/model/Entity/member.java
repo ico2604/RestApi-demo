@@ -2,6 +2,7 @@ package com.api.swagger3.model.Entity;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.annotation.CreatedDate;
 
 
@@ -13,15 +14,23 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.Email;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-@Data
+@Getter
+@Setter
 @Entity
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // 생성자를 통해서 값 변경 목적으로 접근하는 메시지들 차단
+@DynamicUpdate // 변경한 필드만 대응 Dirty Checking
+/**
+ * @Date에는 @toString이 포함되어 있어 엔티티에서 사용하지 않는것이 좋다.
+ * @toString 사용시 불필요한 즉시 로딩이 발생할 수 있다.
+ */
 public class Member extends BaseTimeEntity{
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long memberKey;

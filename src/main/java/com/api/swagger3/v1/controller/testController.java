@@ -36,11 +36,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
@@ -160,7 +163,7 @@ public class testController {
         ErrorResponseBody errorResponseBody;
 
         try{
-            teamService.setTeam(teamDTO);
+            teamService.setTeam2(teamDTO);
             seccessResponseBody = new SeccessResponseBody();
             seccessResponseBody.setResultObject(teamDTO);
             resultBody = mapper.valueToTree(seccessResponseBody);
@@ -179,7 +182,7 @@ public class testController {
         @ApiResponse(responseCode = "400", description = "서버 오류 발생", content = @Content(schema = @Schema(implementation = BadRequestResponseBody.class))),
         @ApiResponse(responseCode = "404", description = "존재하지 않는 리소스 접근", content = @Content(schema = @Schema(implementation = NotFoundResponseBody.class)))
     })
-    @PostMapping(value = "/modTeam")
+    @PutMapping(value = "/modTeam")
     public ResponseEntity<?> modTeam(@Valid @RequestBody TeamDTO teamDTO) {
         ObjectNode resultBody = null;
         ObjectMapper mapper = new ObjectMapper();
@@ -187,13 +190,40 @@ public class testController {
         ErrorResponseBody errorResponseBody;
 
         try{
-            teamService.setTeam(teamDTO);
+            teamService.updateTeam1(teamDTO);
             seccessResponseBody = new SeccessResponseBody();
             seccessResponseBody.setResultObject(teamDTO);
             resultBody = mapper.valueToTree(seccessResponseBody);
             return ResponseEntity.status(HttpStatus.OK).body(resultBody);
         }catch(Exception e){
             log.error("팀 수정 에러", e);
+            errorResponseBody = new ErrorResponseBody();
+            resultBody = mapper.valueToTree(errorResponseBody);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(resultBody);
+        } 
+    }
+
+    @Operation(summary = "팀 삭제", description = "<b>팀</b>을 삭제하는<br>API입니다.", responses = {
+        @ApiResponse(responseCode = "200", description = "팀 수정 성공", content = @Content(schema = @Schema(implementation = SeccessResponseBody.class))),
+        @ApiResponse(responseCode = "500", description = "팀 수정 오류 발생", content = @Content(schema = @Schema(implementation = ErrorResponseBody.class))),
+        @ApiResponse(responseCode = "400", description = "서버 오류 발생", content = @Content(schema = @Schema(implementation = BadRequestResponseBody.class))),
+        @ApiResponse(responseCode = "404", description = "존재하지 않는 리소스 접근", content = @Content(schema = @Schema(implementation = NotFoundResponseBody.class)))
+    })
+    @DeleteMapping(value = "/removeTeam")
+    public ResponseEntity<?> removeTeam(@Valid @RequestParam Long teamKey) {
+        ObjectNode resultBody = null;
+        ObjectMapper mapper = new ObjectMapper();
+        SeccessResponseBody seccessResponseBody;
+        ErrorResponseBody errorResponseBody;
+
+        try{
+            teamService.removeTeam(teamKey);
+            seccessResponseBody = new SeccessResponseBody();
+            seccessResponseBody.setResultObject(teamKey);
+            resultBody = mapper.valueToTree(seccessResponseBody);
+            return ResponseEntity.status(HttpStatus.OK).body(resultBody);
+        }catch(Exception e){
+            log.error("팀 삭제 에러", e);
             errorResponseBody = new ErrorResponseBody();
             resultBody = mapper.valueToTree(errorResponseBody);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(resultBody);
