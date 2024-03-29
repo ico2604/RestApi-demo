@@ -1,13 +1,21 @@
 springdoc:
   swagger-ui:
-    path: /
-    groups-order: DESC
-    operations-sorter: alpha #method
+    path: / #http://localhost:8080/swagger-ui/index.html#/
+    groups-order: ASC #group 정렬
+    tags-sorter: alpha #tag 정렬
+    operations-sorter: alpha #method - api 정렬
+    doc-expansion: none #swagger tag 리스트 펼치기
     disable-swagger-default-url: true
-    display-request-duration: true
+    display-request-duration: true #Try it out 을 실행 후 api 실행 시간표시(milliseconds)
     display-query-params-without-oauth2 : true
   api-docs:
     path: /api-docs
+    groups:
+      enabled: true
+  cache:
+    disabled: true
+  override-with-generic-response: false
+  model-and-view-allowed: true #retrunType ModelAndView에도 Swagger에 노출
   show-actuator: true #엔드포인트
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
@@ -33,3 +41,7 @@ spring:
     hibernate:
       ddl-auto: update
     database: mysql
+
+custom:
+  jwt:
+    secretKey: '8B2743837647E433C551A532977A1ZQ'
