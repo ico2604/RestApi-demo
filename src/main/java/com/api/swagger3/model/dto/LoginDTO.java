@@ -4,11 +4,8 @@ import java.time.LocalDateTime;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-import com.api.swagger3.model.Entity.Member;
-import com.api.swagger3.model.Entity.Team;
 import com.querydsl.core.annotations.QueryProjection;
 
-import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -20,12 +17,21 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class MemberDTO {
+public class LoginDTO {
+    @Schema(description = "발급된 엑세스 토큰")
+    private String accessToken;
+
+    @Schema(description = "발급된 리프레시 토큰")
+    private String refreshToken;
+
     @Schema(description = "회원코드")
     private Long memberKey;
 
     @Schema(description = "아이디")
     private String memberId;
+
+    @Schema(description = "패스워드")
+    private String memberPw;
 
     @Schema(description = "이름")
     private String name;
@@ -59,12 +65,14 @@ public class MemberDTO {
     @Schema(description = "팀 이름")
     private String teamName;
 
-    private Team team;
-
-    
+    @QueryProjection
+    public LoginDTO(Long memberKey, String memberPw){
+        this.memberKey = memberKey;
+        this.memberPw = memberPw;
+    }
 
     @QueryProjection
-    public MemberDTO(Long memberKey, String memberId, String name, String type, String email,
+    public LoginDTO(Long memberKey, String memberId, String name, String type, String email,
     String sex, String birthDate, String phoneNumber, Long teamKey, String teamName){
         this.memberKey = memberKey;
         this.memberId = memberId;
@@ -76,21 +84,5 @@ public class MemberDTO {
         this.phoneNumber = phoneNumber;
         this.teamKey = teamKey;
         this.teamName = teamName;
-    }
-    //dto로 받은 객체를 entity 화하여 저장하는 용도
-    public Member toEntity(){
-        LocalDateTime now = LocalDateTime.now();
-        return Member.builder()
-            .memberKey(memberKey)
-            .memberId(memberId)
-            .name(name)
-            .type(type)
-            .email(email)
-            .sex(sex)
-            .birthDate(birthDate)
-            .phoneNumber(phoneNumber)
-            .team(team)
-            .modDate(now)
-            .build();
     }
 }

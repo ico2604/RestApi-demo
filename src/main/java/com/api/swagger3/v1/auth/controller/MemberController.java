@@ -19,7 +19,6 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -44,7 +43,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Slf4j
 @RequiredArgsConstructor
 @Tag(name = "member", description = "member API")
-@RequestMapping("/api/v1/member")
+@RequestMapping("/api/auth/member")
 public class MemberController {
     
     private final MemberService memberService;
@@ -73,42 +72,6 @@ public class MemberController {
             resultBody = mapper.valueToTree(errorResponseBody);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(resultBody);
         } 
-    }
-
-    @Operation(summary = "로그인", description = "<b>회원로그인후 회원데이터를 불러오는 API입니다.</b>", responses = {
-        @ApiResponse(responseCode = "200", description = "회원 불러오기 성공", content = @Content(schema = @Schema(implementation = SeccessResponseBody.class))),
-        @ApiResponse(responseCode = "500", description = "회원 불러오기 오류 발생", content = @Content(schema = @Schema(implementation = ErrorResponseBody.class))),
-        @ApiResponse(responseCode = "400", description = "서버 오류 발생", content = @Content(schema = @Schema(implementation = BadRequestResponseBody.class))),
-        @ApiResponse(responseCode = "404", description = "존재하지 않는 리소스 접근", content = @Content(schema = @Schema(implementation = NotFoundResponseBody.class)))
-    })
-    @GetMapping(value = "/login/{memberId}/{memberPw}")
-    public ResponseEntity<?> getUser(@Parameter(name = "memberId", description = "회원의 로그인 아이디", in = ParameterIn.PATH) @PathVariable String memberId,
-                                        @Parameter(name = "memberPw", description = "회원의 로그인 비밀번호", in = ParameterIn.PATH) @PathVariable String memberPw) {
-        ObjectNode resultBody = null;
-        ObjectMapper mapper = new ObjectMapper();
-        SeccessResponseBody seccessResponseBody;
-        ErrorResponseBody errorResponseBody;
-        
-        try{
-            MemberDTO m = memberService.loginMember(memberId, memberPw);//조회
-            seccessResponseBody = new SeccessResponseBody();
-            seccessResponseBody.setResultObject(m);//결과값
-            resultBody = mapper.valueToTree(seccessResponseBody);
-            return ResponseEntity.status(HttpStatus.OK).body(resultBody);
-        }catch(Exception e){
-            log.error("controller", e.getMessage());
-            if(e.getMessage() == "SERVICE ERROR"){
-                errorResponseBody = new ErrorResponseBody();
-                resultBody = mapper.valueToTree(errorResponseBody);
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(resultBody);
-            }else {
-                seccessResponseBody = new SeccessResponseBody();
-                seccessResponseBody.setServerMessage(e.getMessage());
-                resultBody = mapper.valueToTree(seccessResponseBody);
-                return ResponseEntity.status(HttpStatus.OK).body(resultBody);
-            }
-            
-        }
     }
 
     @Operation(summary = "회원 리스트(페이징)", description = "<b></b>.", responses = {

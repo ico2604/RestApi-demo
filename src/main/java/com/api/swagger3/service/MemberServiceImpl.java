@@ -12,8 +12,10 @@ import com.api.swagger3.model.dto.QMemberDTO;
 import com.api.swagger3.model.request.MemberSerchCondition;
 import com.api.swagger3.model.Entity.Member;
 import com.api.swagger3.model.Entity.QMember;
+import com.api.swagger3.model.dto.LoginDTO;
 import com.api.swagger3.model.dto.MemberDTO;
 import com.api.swagger3.model.dto.MemberSaveDTO;
+import com.api.swagger3.model.dto.QLoginDTO;
 import com.api.swagger3.repository.MemberRepository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.JPQLQuery;
@@ -36,11 +38,16 @@ public class MemberServiceImpl implements MemberService {
 
     private StringUtils utils;
 
+    public static final String PATTERN_ID = "[A-Za-z[0-9]]{6,12}$"; // 영문, 숫자 6~12자리
+    public static final String PATTERN_PW = "^(?=.*\\d)(?=.*[~`!?@#$%^&*])(?=.*[a-z]).{8,20}$"; // 영문, 숫자, 특수문자 포함 8~20자
+    public static final String PATTERN_EMAIL = "^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$"; // 이메일 형식 확인
+
     @Transactional
     @Override
-    public MemberDTO loginMember(String id, String pw) throws Exception {
+    public LoginDTO loginMember(String id, String pw) throws Exception {
         log.info("loginMember DTO---------------------------------------");
-
+        LoginDTO checkLoginDTO = null;
+        LoginDTO resultLoginDTO = null;
         try {
             // 아이디와 비밀번호 체크(여기에 jwt를 사용하도록 한다)
             if(id.isEmpty()){
@@ -56,18 +63,40 @@ public class MemberServiceImpl implements MemberService {
                 throw new Exception("4개 이상의 비밀번호를 입력해주세요");
             }
         }catch(Exception e){
-            log.error("check", e);
             if(!e.getMessage().isEmpty()){
                 throw new Exception(e.getMessage());
             }
             throw new Exception("SERVICE ERROR");
         }
-        
-        MemberDTO memberDTO = null;
+        //아이디 존재 확인
         try{
+            checkLoginDTO = jpaQueryFactory.select(
+                new QLoginDTO(
+                    qMember.memberKey, 
+                    qMember.memberPw
+                    )
+                )
+                .from(qMember)
+                .where(qMember.memberId.eq(id))
+                .fetchFirst();
 
-            memberDTO = jpaQueryFactory.select(
-                new QMemberDTO(
+            //없는 계정입니다.
+            if(checkLoginDTO == null){
+                throw new Exception("NORESULT");
+            }
+            //클라이언트가 입력한 비밀번호를 sha256 암호화 하여 DB에 저장되어 있는 비밀번호화 비교한다.
+            if(!sha256(pw).equals(checkLoginDTO.getMemberPw())){
+                throw new Exception("NORESULT");
+            }
+        }catch(Exception e){
+            log.error("Member Check", e);
+            throw new Exception("SERVICE ERROR");
+        }
+
+        //회원정보 가져오기
+        try{
+            resultLoginDTO = jpaQueryFactory.select(
+                new QLoginDTO(
                     qMember.memberKey, 
                     qMember.memberId, 
                     qMember.name, 
@@ -81,12 +110,11 @@ public class MemberServiceImpl implements MemberService {
                     )
                 )
                 .from(qMember)
-                .where(qMember.memberId.eq(id))
+                .where(qMember.memberKey.eq(checkLoginDTO.getMemberKey()))
                 .fetchFirst();
-
-                return memberDTO;
+                return resultLoginDTO;
         }catch(Exception e){
-            log.error("loginMember", e);
+            log.error("getMember", e);
             throw new Exception("SERVICE ERROR");
         }
         

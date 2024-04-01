@@ -19,8 +19,6 @@ springdoc:
   show-actuator: true #엔드포인트
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
-  paths-to-match:
-    - /**
 
 spring:
   profiles:

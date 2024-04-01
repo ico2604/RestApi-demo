@@ -1,14 +1,11 @@
 package com.api.swagger3.config;
 
-import java.util.List;
-
 import org.springdoc.core.models.GroupedOpenApi;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import io.swagger.v3.oas.models.security.*;
 
-import io.jsonwebtoken.lang.Arrays;
+import io.swagger.v3.oas.models.Components;
+
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
@@ -35,8 +32,7 @@ public class SwaggerConfig {
         return GroupedOpenApi
                 .builder()
                 .group("Security Open Api")
-                .pathsToMatch("/v1/auth/**")
-                .pathsToExclude("/v1/nonauth/**")
+                .pathsToMatch("/api/auth/**")
                 .addOpenApiCustomizer(buildSecurityOpenApi())
                 .build();
     }
@@ -46,48 +42,36 @@ public class SwaggerConfig {
         return GroupedOpenApi
                 .builder()
                 .group("Non Security Open Api")
-                .pathsToMatch("/v1/nonauth/**")
-                .pathsToExclude("/v1/auth/**")
+                .pathsToMatch("/api/nonauth/**")
                 .build();
     }
-
-    // //스웨거에서 사용할 API 인증 방식 목록
-    // private List<SecurityScheme> defaultAuth() {
-    //     AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
-    //     AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
-    //     authorizationScopes[0] = authorizationScope;
-    //     List<SecurityScheme> list = Arrays.asList(new SecurityScheme("Access", authorizationScopes));
-    //     return Arrays.asList(
-    //             new SecurityScheme("access", authorizationScopes),
-    //             new SecurityScheme("refresh", authorizationScopes));
-    // }
-
-    // // API 작업에 사용할 기본 인증 방식 목록
-    // private SecurityContext securityContext() {
-    //     return SecurityContext.builder()
-    //             .securityReferences(defaultAuth())
-    //             .build();
-    // }
-
-    // private ApiKey apiKey() {
-    //     return new ApiKey("Access", "Access", "Header");
-    // }
-
-    // private ApiKey apiRefreshKey() {
-    //     return new ApiKey("Refresh", "Refresh", "Header");
-    // }
-
     
     public OpenApiCustomizer buildSecurityOpenApi() {
-        SecurityScheme securityScheme = new SecurityScheme()
-                .name("Authorization")
+        String key = "Access Token (Bearer)";
+        String refreshKey = "Refresh Token";
+
+        SecurityRequirement securityRequirement = new SecurityRequirement()
+                .addList(key)
+                .addList(refreshKey);
+
+        SecurityScheme accessTokenSecurityScheme = new SecurityScheme()
                 .type(SecurityScheme.Type.HTTP)
-                .in(SecurityScheme.In.HEADER)
+                .scheme("Bearer")
                 .bearerFormat("JWT")
-                .scheme("bearer");
+                .in(SecurityScheme.In.HEADER)
+                .name("Authorization");
+
+        SecurityScheme refreshTokenSecurityScheme = new SecurityScheme()
+                .type(SecurityScheme.Type.APIKEY)
+                .in(SecurityScheme.In.HEADER)
+                .name("Refesh-token");
+
+        Components components = new Components()
+                .addSecuritySchemes(key, accessTokenSecurityScheme)
+                .addSecuritySchemes(refreshKey, refreshTokenSecurityScheme);
         
         return OpenApi -> OpenApi
-                .addSecurityItem(new SecurityRequirement().addList("ACCESS TOKEN"))
-                .getComponents().addSecuritySchemes("ACCESS TOKEN", securityScheme);
+                .addSecurityItem(securityRequirement)
+                .components(components);
     }
 }
