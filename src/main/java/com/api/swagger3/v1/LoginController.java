@@ -1,4 +1,4 @@
-package com.api.swagger3.v1.nonauth;
+package com.api.swagger3.v1;
 
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,14 +23,20 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @RestController
@@ -38,7 +44,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Slf4j
 @RequiredArgsConstructor
 @Tag(name = "login", description = "login API")
-@RequestMapping("/api/nonauth/login")
+@RequestMapping("/api/v1/login")
 public class LoginController {
     
     private final MemberService memberService;
@@ -63,8 +69,10 @@ public class LoginController {
             LoginDTO loginDTO = memberService.loginMember(memberId, memberPw);//조회
 
             //로그인 성공 후 AccessToken, RefreshToken 발급
-            loginDTO.setAccessToken(jwtProvider.createAccessToken(loginDTO));
-            loginDTO.setRefreshToken(jwtProvider.createRefreshToken(loginDTO));
+            String accessToken = jwtProvider.createAccessToken(loginDTO.getMemberKey());
+            String refreshToken = jwtProvider.createRefreshToken(loginDTO.getMemberKey(), accessToken);
+            loginDTO.setAccessToken(accessToken);
+            loginDTO.setRefreshToken(refreshToken);
 
             seccessResponseBody = new SeccessResponseBody();
             seccessResponseBody.setResultObject(loginDTO);//결과값
@@ -96,5 +104,46 @@ public class LoginController {
             
         }
     }
+    @Operation(summary = "회원 리스트(페이징)", description = "<b></b>.", responses = {
+        @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = SeccessResponseBody.class))),
+        @ApiResponse(responseCode = "500", description = "조회 오류 발생", content = @Content(schema = @Schema(implementation = ErrorResponseBody.class))),
+        @ApiResponse(responseCode = "400", description = "서버 오류 발생", content = @Content(schema = @Schema(implementation = BadRequestResponseBody.class))),
+        @ApiResponse(responseCode = "404", description = "존재하지 않는 리소스 접근", content = @Content(schema = @Schema(implementation = NotFoundResponseBody.class)))
+    })
+    @PostMapping(value = "/getMembersPage")
+    public ResponseEntity<?> getMembersPage(HttpServletRequest req, @RequestBody MemberPageRequest memberPageRequest) {
+        ObjectNode resultBody = null;
+        ObjectMapper mapper = new ObjectMapper();
+        SeccessResponseBody seccessResponseBody;
+        ErrorResponseBody errorResponseBody;
+        try{
+            String authorization = req.getHeader("Authorization").replace("Bearer", "");
+            String reFreshToken = req.getHeader("RefeshToken");
+            log.info("authorization : "+authorization);
+            log.info("reFreshToken : "+reFreshToken);
+            jwtProvider.verifyToken(authorization, reFreshToken);
+        }catch(Exception e){
+            log.error(e.getMessage());
+            errorResponseBody = new ErrorResponseBody();
+            errorResponseBody.setServerMessage(e.getMessage());
+            resultBody = mapper.valueToTree(errorResponseBody);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(resultBody);
+        }
+        
+        
+        try{
+            Pageable pageable = PageRequest.of(memberPageRequest.getPage(), memberPageRequest.getSize());
 
+            Page<MemberDTO> result = memberService.setMembersPage(memberPageRequest.getCondition(), pageable);
+            seccessResponseBody = new SeccessResponseBody();
+            seccessResponseBody.setResultObject(result);
+            resultBody = mapper.valueToTree(seccessResponseBody);
+            return ResponseEntity.status(HttpStatus.OK).body(resultBody);
+        }catch(Exception e){
+            log.error("회원 리스트(페이징)", e);
+            errorResponseBody = new ErrorResponseBody();
+            resultBody = mapper.valueToTree(errorResponseBody);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(resultBody);
+        } 
+    }
 }

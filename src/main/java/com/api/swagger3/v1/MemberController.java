@@ -1,7 +1,8 @@
-package com.api.swagger3.v1.auth.controller;
+package com.api.swagger3.v1;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.api.swagger3.config.JwtProvider;
 import com.api.swagger3.model.dto.MemberDTO;
 import com.api.swagger3.model.dto.MemberSaveDTO;
 import com.api.swagger3.model.request.MemberPageRequest;
@@ -14,11 +15,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -31,22 +31,21 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-//@SecurityRequirement(name = "Bearer Authentication")
 @RestController
 @CrossOrigin("*")
 @Slf4j
 @RequiredArgsConstructor
 @Tag(name = "member", description = "member API")
-@RequestMapping("/api/auth/member")
+@RequestMapping("/api/v1/member")
 public class MemberController {
     
     private final MemberService memberService;
+
+    private final JwtProvider jwtProvider;
 
     @Operation(summary = "회원 등록", description = "<b>회원</b>을 등록하는<br>API입니다.", responses = {
         @ApiResponse(responseCode = "200", description = "회원 등록 성공", content = @Content(schema = @Schema(implementation = SeccessResponseBody.class))),
@@ -86,7 +85,21 @@ public class MemberController {
         ObjectMapper mapper = new ObjectMapper();
         SeccessResponseBody seccessResponseBody;
         ErrorResponseBody errorResponseBody;
-
+        try{
+            String authorization = req.getHeader("Authorization");
+            String reFreshToken = req.getHeader("RefeshToken");
+            log.info("authorization : "+authorization);
+            log.info("reFreshToken : "+reFreshToken);
+            jwtProvider.verifyToken(authorization, reFreshToken);
+        }catch(Exception e){
+            log.error(e.getMessage());
+            errorResponseBody = new ErrorResponseBody();
+            errorResponseBody.setServerMessage(e.getMessage());
+            resultBody = mapper.valueToTree(errorResponseBody);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(resultBody);
+        }
+        
+        
         try{
             Pageable pageable = PageRequest.of(memberPageRequest.getPage(), memberPageRequest.getSize());
 

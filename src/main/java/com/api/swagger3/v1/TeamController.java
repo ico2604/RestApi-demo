@@ -1,4 +1,4 @@
-package com.api.swagger3.v1.auth.controller;
+package com.api.swagger3.v1;
 
 import java.util.List;
 
@@ -38,7 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 @Tag(name = "team", description = "team API")
-@RequestMapping("/api/auth/team")
+@RequestMapping("/api/v1/team")
 public class TeamController {
 
     private final TeamService teamService;

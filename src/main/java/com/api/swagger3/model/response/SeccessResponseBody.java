@@ -1,11 +1,9 @@
 package com.api.swagger3.model.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 @Schema(description = "응답바디 200")
 public class SeccessResponseBody {
     @Schema(description = "응답 코드", nullable = false, example = "200")
