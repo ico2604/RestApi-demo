@@ -12,7 +12,6 @@ import com.api.swagger3.model.response.ErrorResponseBody;
 import com.api.swagger3.model.response.NotFoundResponseBody;
 import com.api.swagger3.model.response.SeccessResponseBody;
 import com.api.swagger3.model.response.UnauthorizedResponseBody;
-import com.api.swagger3.service.JwtService;
 import com.api.swagger3.service.MemberService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
