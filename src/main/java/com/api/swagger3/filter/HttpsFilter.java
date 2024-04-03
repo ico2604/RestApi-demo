@@ -1,4 +1,4 @@
-package com.api.swagger3.component;
+package com.api.swagger3.filter;
 
 import org.springframework.stereotype.Component;
 
@@ -10,7 +10,7 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletResponse;
 
-@Component
+//@Component
 public class HttpsFilter implements Filter {
 
 	@Override

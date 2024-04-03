@@ -86,7 +86,7 @@ public class MemberController {
         SeccessResponseBody seccessResponseBody;
         ErrorResponseBody errorResponseBody;
         try{
-            String authorization = req.getHeader("Authorization");
+            String authorization = req.getHeader("Authorization").replace("Bearer ", "");;
             String reFreshToken = req.getHeader("RefeshToken");
             log.info("authorization : "+authorization);
             log.info("reFreshToken : "+reFreshToken);

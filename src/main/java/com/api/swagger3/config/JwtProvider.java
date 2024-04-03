@@ -2,6 +2,10 @@ package com.api.swagger3.config;
 
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import com.api.swagger3.model.dto.LoginDTO;
@@ -17,9 +21,12 @@ import io.jsonwebtoken.Jwts.SIG;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.MissingClaimException;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,7 +54,7 @@ public class JwtProvider {
 
     //private final static Long ACCESSTOKEN_VALID_MILLSECCOND = 1000 * 60L * 60 * 1; // 유효시간 1시간
     //
-    private final static Long ACCESSTOKEN_VALID_MILLSECCOND = 1000 * 60L; // 유효시간 임시적으로 1분
+    private final static Long ACCESSTOKEN_VALID_MILLSECCOND = 1000 * 60L * 10; // 유효시간 임시적으로 10분
     private final static Long REFRESHTOKEN_VALID_MILLSECCOND = 1000 * 60L * 60L * 24L * 7 ; // 유효시간 1주일
 
     // plain -> 시크릿 키 변환 method
@@ -90,12 +97,11 @@ public class JwtProvider {
     /*
      * Refresh Token 발급
      */
-    public String createRefreshToken(Long memberKey, String accessToken) throws Exception {
+    public String createRefreshToken(Long memberKey) throws Exception {
         try{
 
             Map<String, Object> payloads = new HashMap<>();
             payloads.put("memberKey", memberKey);
-            payloads.put("accessToken", accessToken);
 
             String token = Jwts.builder()
                 .claims(payloads)
@@ -126,56 +132,85 @@ public class JwtProvider {
                 .verifyWith(getSecretKey()).build().parseSignedClaims(accessToken);
 
             Claims payload = claimsJws.getPayload();
-
-            claim_memberKey = (Long) payload.get("memberKey");
-            log.info("claim_memberKey : "+claim_memberKey);
+            claim_memberKey = Long.parseLong(payload.get("memberKey").toString());
 
             reissueToken.setMessage("PASS");
             return reissueToken;
         }
         catch (MissingClaimException e) {
+            e.printStackTrace();
             throw new Exception("Access Token Claims 오류!");
         }
         catch (MalformedJwtException e) {
+            e.printStackTrace();
             throw new Exception("Access Token 유효검사 :: 토큰의 유형이 잘못되었습니다.");
         }
         catch (ExpiredJwtException e) {
             log.info("Access Token 유효검사 :: 만료된 토큰입니다. Refresh Token 유효성 검사를 실시합니다.");
         } 
         catch (Exception e) {
+            e.printStackTrace();
             throw new Exception("Access Token 유효검사 :: 기타오류 발생");
         }
 
         // AccessToken 유효기간이 지났을 경우 RefreshToken 유효성 검사 실시
         try{
-            Jws<Claims> claimsJws = Jwts.parser()
+            Jwts.parser()
                 .verifyWith(getSecretKey()).build().parseSignedClaims(refreshToken);
-
-            Claims payload = claimsJws.getPayload();
-
-            claim_accessToken = (String) payload.get("accessToken");
-            log.info("claim_accessToken : "+claim_accessToken);
 
             /*
              * RefreshToken이 유효할 경우 AccessToken과 RefreshToken을 재발급해준다.
              */
             
             reissueToken.setAccessToken(createAccessToken(claim_memberKey));
-            reissueToken.setRefreshToken(createRefreshToken(claim_memberKey, reissueToken.getAccessToken()));
+            reissueToken.setRefreshToken(createRefreshToken(claim_memberKey));
             reissueToken.setMessage("PASS");
             return reissueToken;
 
         }
         catch (MissingClaimException e) {
+            e.printStackTrace();
             throw new Exception("Refresh Token Claims 오류!");
         }
         catch (ExpiredJwtException e) {
             throw new Exception("Refresh Token 유효검사 :: 만료된 토큰입니다. 토큰 재발급이 필요합니다.");
         } 
         catch (Exception e) {
+            e.printStackTrace();
             throw new Exception("Refresh Token 유효검사 :: 기타오류 발생");
         }
 
+    }
+
+    // 토큰으로 클레임을 만들고 이를 이용해 유저 객체를 만들어서 최종적으로 authentication 객체를 리턴
+    public Authentication getAuthentication(String token) {
+        Jws<Claims> claimsJws = Jwts.parser()
+                .verifyWith(getSecretKey()).build().parseSignedClaims(token);
+        Claims claims = claimsJws.getPayload();
+        log.info("authorites = {}", claims.get("memberKey").toString().split(","));
+        Collection<? extends GrantedAuthority> authorities = Collections.emptyList(); //authorities를 빈 리스트로 설정했으므로, 그대로 대입.
+
+        User principal = new User(claims.getSubject(), "", authorities);
+
+        return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+    }
+
+    // 토큰의 유효성 검증을 수행
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parser()
+                .verifyWith(getSecretKey()).build().parseSignedClaims(token);
+            return true;
+        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
+            log.info("잘못된 JWT 서명입니다.");
+        } catch (ExpiredJwtException e) {
+            log.info("만료된 JWT 토큰입니다.");
+        } catch (UnsupportedJwtException e) {
+            log.info("지원되지 않는 JWT 토큰입니다.");
+        } catch (IllegalArgumentException e) {
+            log.info("JWT 토큰이 잘못되었습니다.");
+        }
+        return false;
     }
 
 }
