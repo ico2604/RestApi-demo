@@ -125,7 +125,6 @@ public class JwtProvider {
         TokenReIssue reissueToken = new TokenReIssue();
 
         Long claim_memberKey = null;
-        String claim_accessToken = null;
 
         try{
             Jws<Claims> claimsJws = Jwts.parser()
@@ -187,7 +186,7 @@ public class JwtProvider {
         Jws<Claims> claimsJws = Jwts.parser()
                 .verifyWith(getSecretKey()).build().parseSignedClaims(token);
         Claims claims = claimsJws.getPayload();
-        log.info("authorites = {}", claims.get("memberKey").toString().split(","));
+        log.info("token = {}", claims.get("memberKey").toString().split(","));
         Collection<? extends GrantedAuthority> authorities = Collections.emptyList(); //authorities를 빈 리스트로 설정했으므로, 그대로 대입.
 
         User principal = new User(claims.getSubject(), "", authorities);
@@ -213,4 +212,11 @@ public class JwtProvider {
         return false;
     }
 
+    //토큰으로 회원 키 가져오기
+    public Long getMemberKey(String token){
+        Jws<Claims> claimsJws = Jwts.parser()
+                .verifyWith(getSecretKey()).build().parseSignedClaims(token);
+        Claims claims = claimsJws.getPayload();
+        return Long.parseLong(claims.get("memberKey").toString());
+    }
 }

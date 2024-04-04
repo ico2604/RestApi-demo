@@ -87,12 +87,12 @@ public class MemberController {
         ErrorResponseBody errorResponseBody;
         try{
             String authorization = req.getHeader("Authorization").replace("Bearer ", "");;
-            String reFreshToken = req.getHeader("RefeshToken");
+            String reFreshToken = req.getHeader("RefreshToken");
             log.info("authorization : "+authorization);
-            log.info("reFreshToken : "+reFreshToken);
+            log.info("RefreshToken : "+reFreshToken);
             jwtProvider.verifyToken(authorization, reFreshToken);
         }catch(Exception e){
-            log.error(e.getMessage());
+            log.error("err : "+e);
             errorResponseBody = new ErrorResponseBody();
             errorResponseBody.setServerMessage(e.getMessage());
             resultBody = mapper.valueToTree(errorResponseBody);
