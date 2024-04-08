@@ -45,10 +45,10 @@ public class SecurtiyConfig {
             .cors(Customizer.withDefaults())// 일반적으로 모든 도메인에서의 요청이 허용됩니다.
 
             .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))//세션 관리 상태 없음으로 구성, Spring Security가 세션 생성 or 사용 X
-  
+            
             .formLogin((from) -> from.disable()) //FormLogin 비활성화
             .httpBasic((basic) -> basic.disable()) // httpBasic 비활성화
-            .addFilterBefore(new JwtFilter(jwtProvider, customUserDetailsService), UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class)
 	        .exceptionHandling((exceptionHandling) -> exceptionHandling.authenticationEntryPoint(authenticationEntryPoint).accessDeniedHandler(accessDenidHandler) )
             .authorizeHttpRequests(//권한규칙 생성
                 (authorizeRequests) -> 
@@ -61,6 +61,9 @@ public class SecurtiyConfig {
             log.error("An error occurred while configuring Spring Security", e);
             throw e; // 예외를 다시 던져서 Spring Boot가 적절히 처리하도록 합니다.
         }
-        
+    }
+    @Bean
+    public JwtFilter jwtFilter() throws Exception {
+        return new JwtFilter(jwtProvider, customUserDetailsService);
     }
 }

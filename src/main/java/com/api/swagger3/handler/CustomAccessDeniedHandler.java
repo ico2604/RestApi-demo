@@ -18,7 +18,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 인증되었지만, 특정 리로스에 대한 권이 없을때 처리
+ * 인증되었지만, 특정 리로스에 대한 권한이 없을때 처리
  */
 @Slf4j
 @AllArgsConstructor
@@ -29,7 +29,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler{
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response,
             AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        log.error("No Authorities", accessDeniedException);
+        log.error("No Authorities", accessDeniedException.getMessage());
 
         UnauthorizedResponseBody body = new UnauthorizedResponseBody();
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

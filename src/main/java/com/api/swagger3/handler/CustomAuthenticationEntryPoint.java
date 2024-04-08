@@ -28,7 +28,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
             AuthenticationException authException) throws IOException, ServletException {
-        log.error("Not Authenticated Request", authException);
+        log.error("Not Authenticated Request", authException.getMessage());
 
         UnauthorizedResponseBody body = new UnauthorizedResponseBody();
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

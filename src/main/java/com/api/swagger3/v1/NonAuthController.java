@@ -13,6 +13,7 @@ import com.api.swagger3.model.response.NotFoundResponseBody;
 import com.api.swagger3.model.response.SeccessResponseBody;
 import com.api.swagger3.model.response.UnauthorizedResponseBody;
 import com.api.swagger3.service.MemberService;
+import com.api.swagger3.util.CookieUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -23,6 +24,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,6 +48,8 @@ public class NonAuthController {
 
     private final JwtProvider jwtProvider;
 
+    private final CookieUtil cookieUtil;
+
     @Operation(summary = "로그인", description = "<b>회원로그인후 회원데이터를 불러오는 API입니다.</b>", responses = {
         @ApiResponse(responseCode = "200", description = "회원 불러오기 성공", content = @Content(schema = @Schema(implementation = SeccessResponseBody.class))),
         @ApiResponse(responseCode = "500", description = "회원 불러오기 오류 발생", content = @Content(schema = @Schema(implementation = ErrorResponseBody.class))),
@@ -52,8 +57,9 @@ public class NonAuthController {
         @ApiResponse(responseCode = "404", description = "존재하지 않는 리소스 접근", content = @Content(schema = @Schema(implementation = NotFoundResponseBody.class)))
     })
     @GetMapping(value = "/login/{memberId}/{memberPw}")
-    public ResponseEntity<?> login(@Parameter(name = "memberId", description = "회원의 로그인 아이디", in = ParameterIn.PATH) @PathVariable String memberId,
-                                        @Parameter(name = "memberPw", description = "회원의 로그인 비밀번호", in = ParameterIn.PATH) @PathVariable String memberPw) {
+    public ResponseEntity<?> login(HttpServletRequest req, HttpServletResponse res,
+                @Parameter(name = "memberId", description = "회원의 로그인 아이디", in = ParameterIn.PATH) @PathVariable String memberId,
+                @Parameter(name = "memberPw", description = "회원의 로그인 비밀번호", in = ParameterIn.PATH) @PathVariable String memberPw) {
         ObjectNode resultBody = null;
         ObjectMapper mapper = new ObjectMapper();
         SeccessResponseBody seccessResponseBody;
@@ -65,6 +71,9 @@ public class NonAuthController {
             //로그인 성공 후 AccessToken, RefreshToken 발급
             String accessToken = jwtProvider.createAccessToken(loginDTO.getMemberKey());
             String refreshToken = jwtProvider.createRefreshToken(loginDTO.getMemberKey());
+
+            //엑세스 토큰 쿠키에 저장
+            cookieUtil.setAuthCookie(res, accessToken);
             
             loginDTO.setAccessToken(accessToken);
             loginDTO.setRefreshToken(refreshToken);

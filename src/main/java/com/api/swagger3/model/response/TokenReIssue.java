@@ -9,4 +9,5 @@ public class TokenReIssue {
     private String accessToken;
     private String refreshToken;
     private String message;
+    private Long claimMemberKey;
 }
