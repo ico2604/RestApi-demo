@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.api.swagger3.model.dto.QMemberDTO;
+import com.api.swagger3.model.request.LoginRequest;
 import com.api.swagger3.model.request.MemberSerchCondition;
 import com.api.swagger3.model.Entity.Member;
 import com.api.swagger3.model.Entity.QMember;
@@ -44,11 +45,14 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public LoginDTO loginMember(String id, String pw) throws Exception {
+    public LoginDTO loginMember(LoginRequest loginRequest) throws Exception {
         log.info("loginMember DTO---------------------------------------");
         LoginDTO checkLoginDTO = null;
         LoginDTO resultLoginDTO = null;
+        String id = loginRequest.getId();
+        String pw = loginRequest.getPw();
         try {
+        
             // 아이디와 비밀번호 체크(여기에 jwt를 사용하도록 한다)
             if(id.isEmpty()){
                 throw new Exception("ID를 입력해주세요.");

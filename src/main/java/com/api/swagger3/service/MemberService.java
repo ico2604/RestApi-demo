@@ -9,11 +9,12 @@ import org.springframework.data.domain.Pageable;
 import com.api.swagger3.model.dto.LoginDTO;
 import com.api.swagger3.model.dto.MemberDTO;
 import com.api.swagger3.model.dto.MemberSaveDTO;
+import com.api.swagger3.model.request.LoginRequest;
 import com.api.swagger3.model.request.MemberSerchCondition;
 
 public interface MemberService {
     
-    public LoginDTO loginMember(String id, String pw) throws Exception;
+    public LoginDTO loginMember(LoginRequest loginRequest) throws Exception;
     public void setMember(MemberSaveDTO memberSaveDTO) throws Exception;
     public Page<MemberDTO> setMembersPage(MemberSerchCondition condition, Pageable pageable) throws Exception;
 
