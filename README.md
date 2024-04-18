@@ -41,3 +41,38 @@ sudo cp src/redis-cli /usr/bin/
 5. 연결
 redis-cli -h 본인의 노드 엔드포인트 -p 6379
 
+## GitHub Actions CI/CD (docker)
+
+### CI/CD
+   - **지속적 통합 (Continuous Integration, CI):**
+     - CI는 코드 변경사항을 메인 브랜치에 통합하는 프로세스입니다. 코드가 통합될 때마다 자동으로 빌드 및 테스트가 수행되어, 오류나 문제점을 빠르게 발견하고 해결할 수 있습니다.
+   - **지속적 배포 (Continuous Delivery/Deployment, CD):**
+     - CI의 다음 단계입니다. 코드 변경 사항을 프로덕션 환경에 자동 배포합니다.
+
+### CI (Continuous Integration)
+깃허브에서 자동으로 추천을 해줍니다.
+
+Actions -> Java with Gradle 생성
+
+### CD (Continuous Deployment)
+EC2에 직접 접근하여 docker 컨테이너를 띄우는 대신 GitHub Actions를 사용하여 자동화 배포를 진행할 예정입니다.
+
+배포 과정:
+1. AWS EC2에 Docker 설치하기:
+    sudo apt update
+    sudo apt install docker.io
+    sudo apt install docker-compose
+    sudo systemctl start docker
+    sudo systemctl enable docker
+    sudo usermod -a -G docker $USER
+2. SSH 키 등록:
+    EC2를 생성할 때 받았던 pem 파일을 사용하여 GitHub 프로젝트 설정의 Secrets and variables > Actions > New repository secret에서 등록합니다.
+3. Docker Hub Access Token 발급 받기:
+    Docker Hub 사이트 > My Account > Security에서 New Access Token을 발급 받습니다. 발급 받은 토큰을 사용하여 docker login -u <username>을 수행합니다.
+4. DOCKER_USERNAME, DOCKER_HUB_TOKEN 등록:
+    EC2_SSH_PRIVATE_KEY를 등록한 것처럼 DOCKER_USERNAME과 DOCKER_HUB_TOKEN을 등록합니다.
+5. application.yml 등록:
+    민감 정보를 관리하기 위해 gitignore에 등록된 application.yml을 New repository secret에 등록합니다.
+6. Dockerfile 작성
+7. 배포를 위한 .github/workflows/gradle.yml 작성
+
