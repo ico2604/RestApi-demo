@@ -59,8 +59,8 @@ jobs:
       
     - name: Build the Docker image
       run: |
-        cd docker/dockerfile  # Dockerfile이 있는 디렉토리로 이동
-        docker build . --file Dockerfile --tag "${{ env.DOCKER_IMAGE_NAME }}:latest"
+        cd docker  # Dockerfile이 있는 디렉토리로 이동
+        docker build . --file dockerfile --tag "${{ env.DOCKER_IMAGE_NAME }}:latest"
         cd ..  # 프로젝트의 루트 디렉토리로 이동
     - name: Login to Docker Hub using Access Token
       run: echo "${{ env.DOCKER_HUB_TOKEN }}" | docker login -u ${{ env.DOCKER_USERNAME }} --password-stdin
