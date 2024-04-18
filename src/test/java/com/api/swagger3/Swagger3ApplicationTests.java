@@ -1,6 +1,6 @@
 package com.api.swagger3;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,7 +17,16 @@ class Swagger3ApplicationTests {
 
 	@Autowired
 	private MemberService memberService;
-
+	/*
+	 * [ given/when/then 패턴 ]
+	 * 요즘 단위테스트는 거의 given-when-then 패턴으로 작성하는 추세이다. 
+	 * given-when-then 패턴이란 1개의 단위 테스트를 3가지 단계로 나누어 처리하는 패턴으로, 
+	 * 각각의 단계는 다음을 의미한다.
+	 * 
+	 * given(준비): 어떠한 데이터가 준비되었을 때
+	 * when(실행): 어떠한 함수를 실행하면
+	 * then(검증): 어떠한 결과가 나와야 한다.
+	 */
 	@Test
 	@DisplayName("test")
 	void contextLoads() {
