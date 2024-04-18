@@ -31,6 +31,9 @@ jobs:
   
     - name: Change permissions for Gradle Wrapper
       run: chmod +x gradlew
+
+    - name: Gradle Clean
+      run: ./gradlew clean
   
     - name: Build with Gradle
       run: ./gradlew build
