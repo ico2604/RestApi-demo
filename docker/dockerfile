@@ -1,0 +1,5 @@
+FROM ubuntu:22.04
+ARG JAR_FILE=build/libs/*.jar
+COPY ${JAR_FILE} swagger3-0.0.1-SNAPSHOT-plain.jar
+ENTRYPOINT ["java","-jar","/swagger3-0.0.1-SNAPSHOT-plain.jar"]
+RUN ln -snf /usr/share/zoneinfo/Asia/Seoul /etc/localtime

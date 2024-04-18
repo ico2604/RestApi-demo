@@ -1,7 +1,5 @@
 package com.api.swagger3.model.dto;
 
-import com.querydsl.core.types.dsl.*;
-
 import com.querydsl.core.types.ConstructorExpression;
 import javax.annotation.processing.Generated;
 
