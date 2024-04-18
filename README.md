@@ -25,3 +25,19 @@ API 문서는 Swagger를 이용하여 자동으로 생성되며, 아래 링크�
 
 API에 접근하기 위해서는 로그인이 필요합니다. 로그인은 jjwt와 Spring Security를 사용하여 구현되었습니다. 인증이 필요한 엔드포인트에 접근하면 토큰을 발급받아야 합니다.
 
+## Ubuntu Redis 서버 셋팅
+1. make
+sudo apt install make
+
+2. make 하기 위핸 gcc 다운
+sudo apt install -y gcc
+
+3. redis-cli 설치 및 make
+wget http://download.redis.io/redis-stable.tar.gz && tar xvzf redis-stable.tar.gz && cd redis-stable && make
+
+4. redis-cli를 bin에 추가해 어느 위치서든 사용 가능하게 등록
+sudo cp src/redis-cli /usr/bin/
+
+5. 연결
+redis-cli -h 본인의 노드 엔드포인트 -p 6379
+

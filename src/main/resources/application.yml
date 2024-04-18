@@ -24,10 +24,15 @@ spring:
   profiles:
     default: dev
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/local?useSSL=false&useUnicode=true&allowPublicKeyRetrieval=true&serverTimeZone=Asia/Seoul
+    url: jdbc:mysql://mydb.choqm4imau2q.ap-northeast-2.rds.amazonaws.com:3306/mydb?useSSL=false&useUnicode=true&allowPublicKeyRetrieval=true&serverTimeZone=Asia/Seoul
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: '0000'
+    username: 'admin'
+    password: 'suho0829'
+  # datasource:
+  #   url: jdbc:mysql://127.0.0.1:3306/local
+  #   driver-class-name: com.mysql.cj.jdbc.Driver
+  #   username: root
+  #   password: '0000'
   jpa:
     open-in-view: false
     show-sql: true
@@ -39,6 +44,10 @@ spring:
     hibernate:
       ddl-auto: update
     database: mysql
+  data:
+    redis:
+      host: 'democluster.l5bean.ng.0001.apn2.cache.amazonaws.com'
+      port: 6379
 
 custom:
   jwt:
