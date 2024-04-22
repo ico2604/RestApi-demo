@@ -1,0 +1,4 @@
+FROM ubuntu:22.04
+COPY ../build/libs/*.jar demo.jar
+ENTRYPOINT ["java","-jar","/demo.jar"]
+RUN ln -snf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
