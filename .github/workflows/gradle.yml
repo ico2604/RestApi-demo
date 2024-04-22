@@ -69,7 +69,7 @@ jobs:
       run: echo "${{ env.DOCKER_HUB_TOKEN }}" | docker login -u ${{ env.DOCKER_USERNAME }} --password-stdin
 
     - name: Build the Docker image
-      run: docker build . --file dockerfile --tag "${{ env.DOCKER_IMAGE_NAME }}:latest" 
+      run: docker build . --file Dockerfile --tag "${{ env.DOCKER_IMAGE_NAME }}:latest" 
 
   
 
