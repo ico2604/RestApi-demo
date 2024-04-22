@@ -13,7 +13,7 @@ on:
   pull_request:
     branches: [ "main" ]
 env:
-  DOCKER_IMAGE_NAME: demo
+  DOCKER_IMAGE_NAME: rest-api-demo
   DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
   EC2_HOST: ec2-15-164-210-87.ap-northeast-2.compute.amazonaws.com
