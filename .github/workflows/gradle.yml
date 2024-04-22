@@ -13,10 +13,10 @@ on:
   pull_request:
     branches: [ "main" ]
 env:
-  DOCKER_IMAGE_NAME: image-name
+  DOCKER_IMAGE_NAME: demo
   DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-  EC2_HOST: ec2-13-124-18-68.ap-northeast-2.compute.amazonaws.com
+  EC2_HOST: ec2-15-164-210-87.ap-northeast-2.compute.amazonaws.com
   EC2_SSH_USER: ec2-user
   PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
 jobs:
@@ -38,10 +38,7 @@ jobs:
     # 실행 권한 부여
     - name: Change permissions for Gradle Wrapper
       run: chmod +x gradlew
-    # yml에 숨겨진 데이터 넣기
-    - name: Set up application.yml
-      run: echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.yml
-    # 그래들 캐싱
+      # gradle caching - 빌드 시간 향상
     - name: Gradle Caching
       uses: actions/cache@v3
       with:
@@ -51,19 +48,31 @@ jobs:
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
         restore-keys: |
           ${{ runner.os }}-gradle-
+
+    # yml에 숨겨진 데이터 넣기
+    - name: Set up application.yml
+      run: |
+        mkdir ./src/main/resources 
+        cd ./src/main/resources 
+        touch ./application.yml 
+        echo "${{ secrets.APPLICATION }}" > ./application.yml
+      shell: bash
     
     - name: Gradle Clean
       run: ./gradlew clean
+
+    # gradle build
     - name: Build with Gradle
       run: ./gradlew build
       
-    - name: Build the Docker image
-      run: |
-        cd docker  # Dockerfile이 있는 디렉토리로 이동
-        docker build . --file dockerfile --tag "${{ env.DOCKER_IMAGE_NAME }}:latest"
-        cd ..  # 프로젝트의 루트 디렉토리로 이동
     - name: Login to Docker Hub using Access Token
       run: echo "${{ env.DOCKER_HUB_TOKEN }}" | docker login -u ${{ env.DOCKER_USERNAME }} --password-stdin
+
+    - name: Build the Docker image
+      run: docker build . --file dockerfile --tag "${{ env.DOCKER_IMAGE_NAME }}:latest" 
+
+  
+
     - name: Push the Docker image
       run: docker push ${{ env.DOCKER_IMAGE_NAME }}:latest
       
