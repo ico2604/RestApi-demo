@@ -82,7 +82,7 @@ dependencies {
 
 //querydsl 추가 시작
 // QueryDsl 디렉토리 경로
-def querydslDir = "src/generated/querydsl"
+def querydslDir = "$buildDir/generated/querydsl"
 
 // 경로 추가 >> QueryDsl 소스 코드 컴파일 시 빌드
 sourceSets {
