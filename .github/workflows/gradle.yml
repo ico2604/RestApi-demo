@@ -18,7 +18,7 @@ env:
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
   DOCKER_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD}}
   EC2_HOST: ec2-54-180-109-109.ap-northeast-2.compute.amazonaws.com
-  EC2_SSH_USER: ec2-user
+  EC2_SSH_USER: ubuntu
   PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
 jobs:
   build-and-push-docker:
