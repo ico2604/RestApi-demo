@@ -41,7 +41,7 @@ public class RedisController {
     /*
      * Redis key value 저장
      */
-    @Operation(summary = "Redis Set", description = "key : value 형식으로 저장한다.", responses = {
+    @Operation(summary = "Redis Set!!!", description = "key : value 형식으로 저장한다.", responses = {
         @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = SeccessResponseBody.class))),
         @ApiResponse(responseCode = "500", description = "오류 발생", content = @Content(schema = @Schema(implementation = ErrorResponseBody.class))),
         @ApiResponse(responseCode = "400", description = "서버 오류 발생", content = @Content(schema = @Schema(implementation = BadRequestResponseBody.class))),
