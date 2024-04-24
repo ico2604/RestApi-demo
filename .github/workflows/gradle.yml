@@ -15,7 +15,7 @@ on:
 env:
   DOCKER_IMAGE_NAME: demo-repo
   DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
-  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+  DOCKER_USERNAME: hwangbosuho
   DOCKER_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD}}
   EC2_HOST: ec2-54-180-109-109.ap-northeast-2.compute.amazonaws.com
   EC2_SSH_USER: ubuntu
