@@ -71,7 +71,7 @@ jobs:
       #-p password
 
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag "${{ env.DOCKER_IMAGE_NAME }}:latest" 
+      run: docker build . --file Dockerfile --tag "${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:latest" 
 
   
 
