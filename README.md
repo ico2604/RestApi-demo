@@ -13,13 +13,6 @@ API 문서는 Swagger를 이용하여 자동으로 생성되며, 아래 링크�
 
 [Swagger UI](http://localhost:8080/swagger-ui/index.html)
 
-## 빌드 및 실행
-
-프로젝트를 빌드하고 실행하기 위해서는 다음의 단계를 따르십시오:
-
-1. MySQL을 설치하고 설정합니다.
-2. `application.properties` 파일에서 데이터베이스 연결 정보를 설정합니다.
-3. 프로젝트를 빌드합니다.
 
 ## 로그인
 
@@ -55,7 +48,7 @@ redis-cli -h 본인의 노드 엔드포인트 -p 6379
 Actions -> Java with Gradle 생성
 
 ### CD (Continuous Deployment)
-EC2에 직접 접근하여 docker 컨테이너를 띄우는 대신 GitHub Actions를 사용하여 자동화 배포를 진행할 예정입니다.
+EC2에 직접 접근하여 docker 컨테이너를 띄우는 대신 GitHub Actions를 사용하여 자동화 배포를 진행합니다.
 
 배포 과정:
 1. AWS EC2에 Docker 설치하기:
@@ -75,10 +68,6 @@ EC2에 직접 접근하여 docker 컨테이너를 띄우는 대신 GitHub Action
     민감 정보를 관리하기 위해 gitignore에 등록된 application.yml을 New repository secret에 등록합니다.
 6. Dockerfile 작성
 7. 배포를 위한 .github/workflows/gradle.yml 작성
-8. 해당 서버에 접속하여 git clone github.com/ico2604/project-name
-9. 깃이 수정되었을 경우 git pull origin main 먼저 실행
-10. 도커 로그인 docker login -u ID -p PW
-11. docker build -t 이미지명 .
-12. docker run -d -p 8080:8080 이미지명:latest
+8. main 브런치에 push하여 빌드
 
 
