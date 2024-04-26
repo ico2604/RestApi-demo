@@ -40,15 +40,15 @@ jobs:
     - name: Change permissions for Gradle Wrapper
       run: chmod +x gradlew
       # gradle caching - 빌드 시간 향상
-    - name: Gradle Caching
-      uses: actions/cache@v3
-      with:
-        path: |
-           ~/.gradle/caches
-           ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-        restore-keys: |
-          ${{ runner.os }}-gradle-
+    # - name: Gradle Caching
+    #   uses: actions/cache@v3
+    #   with:
+    #     path: |
+    #        ~/.gradle/caches
+    #        ~/.gradle/wrapper
+    #     key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+    #     restore-keys: |
+    #       ${{ runner.os }}-gradle-
 
     # yml에 숨겨진 데이터 넣기
     - name: Set up application.yml
