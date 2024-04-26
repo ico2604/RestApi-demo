@@ -14,6 +14,7 @@ on:
     branches: [ "main" ]
 env:
   DOCKER_IMAGE_NAME: demo-repo
+  VERSIOM: v1.0.0
   DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
   DOCKER_USERNAME: hwangbosuho
   DOCKER_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD}}
@@ -73,12 +74,12 @@ jobs:
       #-p password
 
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag "${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:latest" 
+      run: docker build . --file Dockerfile --tag "${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.VERSIOM}}" 
 
   
 
     - name: Push the Docker image
-      run: docker push ${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:latest
+      run: docker push ${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.VERSIOM}}
       
   deploy-to-ec2:
 
@@ -100,8 +101,8 @@ jobs:
             sudo docker rm $CONTAINER_ID
           fi
 
-          sudo docker pull ${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:latest
-          sudo docker run -d -p 8080:8080 -e TZ=Asia/Seoul ${{ env.DOCKER_IMAGE_NAME }}:latest  
+          sudo docker pull ${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.VERSIOM}}
+          sudo docker run -d -p 8080:8080 -e TZ=Asia/Seoul ${{ env.DOCKER_IMAGE_NAME }}:${{ env.VERSIOM}}  
 
     # Configure Gradle for optimal use in GiHub Actions, including caching of downloaded dependencies.
     # See: https://github.com/gradle/actions/blob/main/setup-gradle/README.md
