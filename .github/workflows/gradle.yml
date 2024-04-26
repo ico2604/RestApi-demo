@@ -59,8 +59,10 @@ jobs:
         echo "${{ secrets.APPLICATION }}" > ./application.yml
       shell: bash
     
-    - name: Gradle Clean
-      run: ./gradlew clean
+    - name: Gradle Clean 및 캐시 제거
+      run: |
+        ./gradlew clean
+        rm -rf ~/.gradle
 
     # gradle build
     - name: Build with Gradle
