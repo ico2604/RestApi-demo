@@ -74,12 +74,12 @@ jobs:
       #-p password
 
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag "${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.VERSIOM}}" 
+      run: docker build . --file Dockerfile --tag "${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.VERSIOM }}" 
 
   
 
     - name: Push the Docker image
-      run: docker push ${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.VERSIOM}}
+      run: docker push ${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.VERSIOM }}
       
   deploy-to-ec2:
 
@@ -101,8 +101,8 @@ jobs:
             sudo docker rm $CONTAINER_ID
           fi
 
-          sudo docker pull ${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.VERSIOM}}
-          sudo docker run -d -p 8080:8080 -e TZ=Asia/Seoul ${{ env.DOCKER_IMAGE_NAME }}:${{ env.VERSIOM}}  
+          sudo docker pull ${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.VERSIOM }}
+          sudo docker run -d -p 8080:8080 -e TZ=Asia/Seoul ${{ env.DOCKER_IMAGE_NAME }}:${{ env.VERSIOM }}  
 
     # Configure Gradle for optimal use in GiHub Actions, including caching of downloaded dependencies.
     # See: https://github.com/gradle/actions/blob/main/setup-gradle/README.md

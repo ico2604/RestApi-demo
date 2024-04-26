@@ -49,8 +49,8 @@ public class MemberServiceImpl implements MemberService {
         log.info("loginMember DTO---------------------------------------");
         LoginDTO checkLoginDTO = null;
         LoginDTO resultLoginDTO = null;
-        String id = loginRequest.getId();
-        String pw = loginRequest.getPw();
+        String id = loginRequest.getUserId();
+        String pw = loginRequest.getUserPw();
         try {
         
             // 아이디와 비밀번호 체크(여기에 jwt를 사용하도록 한다)

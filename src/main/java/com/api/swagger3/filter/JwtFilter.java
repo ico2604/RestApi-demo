@@ -42,7 +42,6 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException, java.io.IOException {
         //헤더에 있는 토큰 불러오기
         String accessToken = resolveToken(request);
-        String refreshToken = request.getHeader(REFRESH_TOKEN_HEADER);
 
         //JWT 유효성 검증
         if (StringUtils.hasText(accessToken)) {

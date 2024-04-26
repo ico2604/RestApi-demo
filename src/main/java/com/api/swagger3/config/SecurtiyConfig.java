@@ -50,7 +50,7 @@ public class SecurtiyConfig {
             .authorizeHttpRequests(//권한규칙 생성
                 (authorizeRequests) -> 
                     authorizeRequests
-                    .requestMatchers(AUTH_WHITElIST).permitAll()// ./api/v1/nonauth 포함한 end point 보안 적용 X
+                    .requestMatchers(AUTH_WHITElIST).permitAll()// 특정루트 end point 보안 적용 X
                     .anyRequest().authenticated() // 그 외 인증 없이 접근X
         );
             return http.build();

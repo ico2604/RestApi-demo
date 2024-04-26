@@ -4,10 +4,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.api.swagger3.config.JwtProvider;
 import com.api.swagger3.model.dto.LoginDTO;
-import com.api.swagger3.model.dto.MemberDTO;
-import com.api.swagger3.model.dto.MemberSaveDTO;
 import com.api.swagger3.model.request.LoginRequest;
-import com.api.swagger3.model.request.MemberPageRequest;
 import com.api.swagger3.model.response.BadRequestResponseBody;
 import com.api.swagger3.model.response.ErrorResponseBody;
 import com.api.swagger3.model.response.NotFoundResponseBody;
@@ -19,32 +16,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @CrossOrigin("*")
 @Slf4j
 @RequiredArgsConstructor
 @Tag(name = "nonauth", description = "NonAuth API")
-@RequestMapping("/api/v1/nonauth")
+@RequestMapping("/api/v1/nonauth/member")
 public class NonAuthController {
     
     private final MemberService memberService;
@@ -60,8 +53,8 @@ public class NonAuthController {
         @ApiResponse(responseCode = "404", description = "존재하지 않는 리소스 접근", content = @Content(schema = @Schema(implementation = NotFoundResponseBody.class)))
     })
     @PostMapping(value = "/login")
-    public ResponseEntity<?> login(HttpServletRequest req, HttpServletResponse res,
-                @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> login(HttpServletResponse res,
+                                @Valid @RequestBody LoginRequest loginRequest) {
         ObjectNode resultBody = null;
         ObjectMapper mapper = new ObjectMapper();
         SeccessResponseBody seccessResponseBody;
