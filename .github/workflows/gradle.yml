@@ -17,7 +17,7 @@ env:
   DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
   DOCKER_USERNAME: hwangbosuho
   DOCKER_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD}}
-  EC2_HOST: ec2-54-180-109-109.ap-northeast-2.compute.amazonaws.com
+  EC2_HOST: ec2-15-164-250-84.ap-northeast-2.compute.amazonaws.com
   EC2_SSH_USER: ubuntu
   PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
 jobs:
