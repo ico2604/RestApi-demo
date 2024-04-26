@@ -14,7 +14,7 @@ on:
     branches: [ "main" ]
 env:
   DOCKER_IMAGE_NAME: demo-repo
-  VERSIOM: v1.0.0
+  VERSIOM: latest
   DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
   DOCKER_USERNAME: hwangbosuho
   DOCKER_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD}}
